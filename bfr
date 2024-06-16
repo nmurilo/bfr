@@ -50,7 +50,7 @@ for user in $(cat $ufile); do
       sed -e "s/password=\".*\"/password=\"$pwd\"/" > $tempfile
       [ ! -z "$debug" ] && echo "Trying $user:$pwd" 
       if timeout $t ${wpa_sup} -c ./wpa.conf -i $iface 2>/dev/null | grep complete >/dev/null ; then 
-         echo "Creadential found: $user:$pwd" 
+         echo "Credential found: $user:$pwd" 
       fi
    done
 done
