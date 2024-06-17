@@ -36,7 +36,7 @@ if ! ${iw} "${iface}" info >/dev/null ; then
    echo "Interface $iface not found" 
    exit
 fi
-ip link set ${iface} up 
+${ip} link set ${iface} up 
 if ! ${iw} dev "$iface" scan | grep $ssid > /dev/null; then 
    echo "SSID $ssid not found"  
    exit 
