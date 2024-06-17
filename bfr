@@ -27,7 +27,7 @@ while getopts 'i:u:p:s:t:d' c; do
 done
 
 [ -z ${wpa_sup} ] && { 
-   echo wpa_supplicant not found, please install 
+   echo "wpa_supplicant not found, please install it"
    exit
 }
 [ -z "${pfile}" -o -z "${ufile}" -o -z "${iface}" ] && usage 
