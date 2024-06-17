@@ -1,4 +1,4 @@
-trap "exit" 2
+trap "rm -f wpa.conf.*; exit" 2
 #! /bin/bash 
 # Nelson Murilo - 2024/06/16 AMS (c) 
 #
