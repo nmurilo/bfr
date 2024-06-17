@@ -1,3 +1,4 @@
+trap "exit" 2
 #! /bin/bash 
 # Nelson Murilo - 2024/06/16 AMS (c) 
 #
@@ -41,10 +42,11 @@ if ! ${iw} dev "$iface" scan | grep $ssid > /dev/null; then
    echo "SSID $ssid not found"  
    exit 
 fi
-cat ${tmpfile} | sed -e "s/ssid=\".*\"/ssid=\"$ssid\"/"  > ${tmpfile}
+r=$RANDOM
+cat ${tmpfile} | sed -e "s/ssid=\".*\"/ssid=\"$ssid\"/"  > ${tmpfile}.$r
 for user in $(cat $ufile); do 
    for pwd in $(cat $pfile) ;do 
-      cat $tmpfile | \
+      cat $tmpfile.$r | \
       sed -e "s/identity=\".*\"/identity=\"$user\"/" | \
       sed -e "s/password=\".*\"/password=\"$pwd\"/" > $tmpfile
       [ ! -z "$debug" ] && echo "Trying $user:$pwd" 
@@ -53,3 +55,4 @@ for user in $(cat $ufile); do
       fi
    done
 done
+rm -f ${tmpfile}.$r
